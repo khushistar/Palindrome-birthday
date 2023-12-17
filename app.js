@@ -21,7 +21,6 @@ function ConvertingDateToString(date) {
 
 function getAllDateFormates(date) {
   let convertedDate = ConvertingDateToString(date);
-  console.log(convertedDate);
   let DDMMYYYY = convertedDate.day + convertedDate.month + convertedDate.year;
   let MMDDYYYY = convertedDate.month + convertedDate.day + convertedDate.year;
   let YYYYMMDD = convertedDate.year + convertedDate.month + convertedDate.day;
@@ -42,7 +41,6 @@ function ReverseString(string) {
 
 function checkPalindromeForAllDateFormats(date) {
   let ArrayOfDateStrings = getAllDateFormates(date);
-  console.log(ArrayOfDateStrings);
   let isPalindrome = false;
   for (let i = 0; i < ArrayOfDateStrings.length; i++) {
     let reversedString = ReverseString(ArrayOfDateStrings[i]);
@@ -54,21 +52,81 @@ function checkPalindromeForAllDateFormats(date) {
   return isPalindrome;
 }
 
+// ----------------------get-next-PalindromeDate------------
+function isLeapYear(year) {
+  if (year % 40 === 0) {
+    return true;
+  } else if (year % 100 === 0) {
+    return false;
+  } else if (year % 4 === 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function nextDate(date) {
+  let day = date.day + 1;
+  let month = date.month;
+  let year = date.year;
+  let daysInmonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (month === 2) {
+    if (isLeapYear(year)) {
+      if (day > 29) {
+        day = 1;
+        month++;
+      }
+    } else {
+      if (day > 28) {
+        day = 1;
+        month++;
+      }
+    }
+  } else {
+    if (day > daysInmonths[month - 1]) {
+      day = 1;
+      month++;
+    }
+    if (month > 12) {
+      month = 1;
+      year++;
+    }
+  }
+  return {
+    day: day,
+    month: month,
+    year: year,
+  };
+}
+
+function getNextPalindromeDate(date) {
+  let numberofDays = 0;
+  let nextdate = nextDate(date);
+  while (1) {
+    numberofDays++;
+    let isPalindrome = checkPalindromeForAllDateFormats(nextdate);
+    if (isPalindrome) {
+      break;
+    }
+    nextdate = nextDate(nextdate);
+  }
+  return [numberofDays, nextdate];
+}
+
 function handleClick() {
   let dateObject = {};
   let Date = date.value;
   let dateArray = Date.split("-");
-  console.log(dateArray);
   dateObject.day = Number(dateArray[2]);
   dateObject.month = Number(dateArray[1]);
   dateObject.year = Number(dateArray[0]);
-  console.log(dateObject);
   if (Date !== "") {
     let result = checkPalindromeForAllDateFormats(dateObject);
     if (result === true) {
       massage.innerText = "Yay! Your birthday is Palindrome";
     } else {
-      console.log("birthday is not palindrome");
+      let nextpalindromedate = getNextPalindromeDate(dateObject);
+      massage.innerText = `Your next Palindrome date is ${nextpalindromedate[1].day}-${nextpalindromedate[1].month}-${nextpalindromedate[1].year}. You missed by ${nextpalindromedate[0]} days`;
     }
   }
 }
