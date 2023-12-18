@@ -113,6 +113,51 @@ function getNextPalindromeDate(date) {
   return [numberofDays, nextdate];
 }
 
+// get previouspalindrome date
+
+function previousDate(date) {
+  let day = date.day - 1;
+  let month = date.month;
+  let year = date.year;
+  let daysInmonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (day === 0) {
+    month--;
+    if (month === 2) {
+      if (isLeapYear(year)) {
+        day = 29;
+      } else {
+        day = 28;
+      }
+    } else if (month === 0) {
+      month = 12;
+      day = 31;
+      year--;
+    } else {
+      day = daysInmonths[month - 1];
+    }
+  }
+
+  return {
+    day: day,
+    month: month,
+    year: year,
+  };
+}
+
+function getPreviousPalindromeDate(date) {
+  let previousdate = previousDate(date);
+  let numberofdays = 0;
+  while (1) {
+    numberofdays++;
+    let isPalinDrome = checkPalindromeForAllDateFormats(previousdate);
+    if (isPalinDrome === true) {
+      break;
+    }
+    previousdate = previousDate(previousdate);
+  }
+  return [numberofdays, previousdate];
+}
+
 function handleClick() {
   let dateObject = {};
   let Date = date.value;
@@ -126,7 +171,12 @@ function handleClick() {
       massage.innerText = "Yay! Your birthday is Palindrome";
     } else {
       let nextpalindromedate = getNextPalindromeDate(dateObject);
-      massage.innerText = `Your next Palindrome date is ${nextpalindromedate[1].day}-${nextpalindromedate[1].month}-${nextpalindromedate[1].year}. You missed by ${nextpalindromedate[0]} days`;
+      let previouspalindromedate = getPreviousPalindromeDate(dateObject);
+      if (previouspalindromedate[0] < nextpalindromedate[0]) {
+        massage.innerText = `Your nearest Palindrome date is ${previouspalindromedate[1].day}-${previouspalindromedate[1].month}-${previouspalindromedate[1].year}. You missed by ${previouspalindromedate[0]} days`;
+      } else {
+        massage.innerText = `Your nearest Palindrome date is ${nextpalindromedate[1].day}-${nextpalindromedate[1].month}-${nextpalindromedate[1].year}. You missed by ${nextpalindromedate[0]} days`;
+      }
     }
   }
 }
